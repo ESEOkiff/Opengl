@@ -14,13 +14,17 @@ class Engine
         Engine(int wHeigh = 600, int wWidth = 800, bool isWresizable = 0);
         void run();
         int getEngineState();
+        void replaceShader(const std::string& vertexPath, const std::string& fragmentPath);
+    
+        protected:
+        GLFWwindow* window;
+
+        
+        virtual void onStart() {}
+        virtual void onUpdate() {}
+        virtual void onRender() {}
         
     private:
-        void update();
-        void render();
-        
-        GLFWwindow* window;
-        unsigned int shaderProgram;
         int engineState{0};
         Shader shader;
     

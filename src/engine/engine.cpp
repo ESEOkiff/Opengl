@@ -64,39 +64,21 @@ void Engine::run()
     shader.use();
 
     
-
+    onStart();
     
     while (!glfwWindowShouldClose(window))
     {
         shader.use();
-        float angle = glfwGetTime();
-        
-        float c = cos(angle);
-        float s = sin(angle);
-        
-        float rotation[16] = {
-            c,  s, 0, 0,
-            -s,  c, 0, 0,
-            0,  0, 1, 0,
-            0,  0, 0, 1
-        };
-        
-        
-        unsigned int loc = glGetUniformLocation(shader.ID,"rotation");
-
-        if(loc == -1)
-            std::cout << "uniform rotation introuvable\n";
-
-        glUniformMatrix4fv(loc,1,GL_FALSE,rotation);
-        
-        render();
+       
+        onUpdate();
+        onRender();
 
     }
     
     glfwTerminate();
 }
 
-void Engine::render()
+void Engine::onRender()
 {
     glClearColor(0.0,0.75f,1.0f,0.0);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -107,3 +89,9 @@ void Engine::render()
 }
 
 int Engine::getEngineState(){return engineState;}
+
+
+void Engine::replaceShader(const std::string& vertexPath, const std::string& fragmentPath) 
+{
+    shader = Shader(vertexPath.c_str(), fragmentPath.c_str());
+}
