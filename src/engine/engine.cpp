@@ -8,14 +8,13 @@
 #include <string>
 #include <cmath>
 
-Engine::Engine() 
+Engine::Engine(int wHeigh, int wWidth, bool isWresizable)
 {   
     glfwInit();
-    
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_RESIZABLE, 0);
-    window = glfwCreateWindow(800, 600, "OpenGL", NULL, NULL);
+    glfwWindowHint(GLFW_RESIZABLE, isWresizable);
+    window = glfwCreateWindow(wWidth, wHeigh, "OpenGL", NULL, NULL);
     
     if (!window)
     {
@@ -101,7 +100,7 @@ void Engine::render()
 {
     glClearColor(0.0,0.75f,1.0f,0.0);
     glClear(GL_COLOR_BUFFER_BIT);
-    glDrawArrays(GL_TRIANGLES, 0, 4);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     
     glfwSwapBuffers(window);
     glfwPollEvents();

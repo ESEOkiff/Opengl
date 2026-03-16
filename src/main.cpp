@@ -15,7 +15,7 @@ std::string readFile(const char* path);
 using namespace myMath;
 int main()
 {
-    Engine e;
+    Engine e{500,1000,1};
     if (e.getEngineState() == -1) 
     {
         std::cout <<"Ereur lors de l'inisialisation"<<std::endl;

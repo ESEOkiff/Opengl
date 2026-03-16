@@ -6,5 +6,5 @@ uniform mat4 rotation;
 
 void main()
 {
-    gl_Position =rotation * vec4(aPos, 1.0);
+    gl_Position =rotation* vec4(aPos, 1.0);
 }

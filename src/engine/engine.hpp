@@ -11,7 +11,7 @@
 class Engine
 {
     public:
-        Engine();
+        Engine(int wHeigh = 600, int wWidth = 800, bool isWresizable = 0);
         void run();
         int getEngineState();
         
