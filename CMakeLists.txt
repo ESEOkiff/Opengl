@@ -10,7 +10,12 @@ find_package(glfw3 REQUIRED)
 add_library(glad src/glad.c)
 target_include_directories(glad PUBLIC include)
 
-add_executable(app src/main.cpp src/engine/engine.cpp src/renderer/shader/shader.cpp)
+add_executable(app
+    src/main.cpp
+    src/engine/engine.cpp
+    src/renderer/shader/shader.cpp
+    src/renderer/mesh/Mesh.cpp
+)
 
 target_link_libraries(app 
     OpenGL::GL

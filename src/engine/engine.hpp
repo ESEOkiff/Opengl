@@ -6,6 +6,7 @@
 #include <sstream>
 #include <string>
 #include "../renderer/shader/shader.hpp"
+#include "../renderer/mesh/Mesh.hpp"
 
 
 class Engine
@@ -15,15 +16,16 @@ class Engine
         void run();
         int getEngineState();
         void replaceShader(const std::string& vertexPath, const std::string& fragmentPath);
-        void drawRectangle(float x1,float y1, float x2, float y2, float x3, float y3);
+        void drawTriangle(float x1,float y1, float x2, float y2, float x3, float y3);
 
         protected:
         GLFWwindow* window;
 
         
-        virtual void onStart() {}
-        virtual void onUpdate() {}
-        virtual void onRender() {}
+        virtual void onStart();
+        virtual void onUpdate();
+        virtual void onRender();
+        void basicRender();
         
     private:
         int engineState{0};

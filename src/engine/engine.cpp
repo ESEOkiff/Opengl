@@ -39,9 +39,8 @@ void Engine::run()
         -0.8f,  0.8f, 0.0f,   // top-left
         -0.8f, -0.8f, 0.0f,   // bottom-left
          0.8f,  0.8f, 0.0f,   // top-right
-         0.8f, -0.8f, 0.0f    // bottom-right
     };
-    
+    //MYTODO : mouve to class mesh and adapt
     unsigned int VAO;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
@@ -73,6 +72,9 @@ void Engine::run()
         onUpdate();
         onRender();
 
+        glfwPollEvents();
+        glfwSwapBuffers(window);
+
     }
     
     glfwTerminate();
@@ -80,13 +82,19 @@ void Engine::run()
 
 void Engine::onRender()
 {
+    Engine::basicRender();
+}
+
+void Engine::basicRender() 
+{
     glClearColor(0.0,0.75f,1.0f,0.0);
     glClear(GL_COLOR_BUFFER_BIT);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    
-    glfwSwapBuffers(window);
-    glfwPollEvents();
+    //glDrawArrays(GL_TRIANGLES, 0, 3);
+
+    drawTriangle(-0.5f,-0.5f, 0.5f,-0.5f, 0.0f,0.5f);
 }
+
+
 
 int Engine::getEngineState(){return engineState;}
 
@@ -96,7 +104,16 @@ void Engine::replaceShader(const std::string& vertexPath, const std::string& fra
     shader = Shader(vertexPath.c_str(), fragmentPath.c_str());
 }
 
-void drawRectangle(float x1,float y1, float x2, float y2, float x3, float y3) 
+void Engine::drawTriangle(float x1,float y1, float x2, float y2, float x3, float y3)
 {
-    
+    float vertices []= {
+        x1, y1 , 0.0f,
+        x2, y2, 0.0f,
+        x3, y3, 0.0f
+    };
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
 }
+
+void Engine::onStart() {}
+void Engine::onUpdate() {}
