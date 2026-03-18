@@ -95,3 +95,8 @@ void Engine::replaceShader(const std::string& vertexPath, const std::string& fra
 {
     shader = Shader(vertexPath.c_str(), fragmentPath.c_str());
 }
+
+void drawRectangle(float x1,float y1, float x2, float y2, float x3, float y3) 
+{
+    
+}
