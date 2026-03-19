@@ -41,11 +41,9 @@ void Engine::run()
          0.8f,  0.8f, 0.0f,   // top-right
     };
     //MYTODO : mouve to class mesh and adapt
-    unsigned int VAO;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
     
-    unsigned int VBO;
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
@@ -91,7 +89,7 @@ void Engine::basicRender()
     glClear(GL_COLOR_BUFFER_BIT);
     //glDrawArrays(GL_TRIANGLES, 0, 3);
 
-    drawTriangle(-0.5f,-0.5f, 0.5f,-0.5f, 0.0f,0.5f);
+    drawRectangle(-0.8f,0.8f, -0.8f,0.8f);
 }
 
 
@@ -106,6 +104,8 @@ void Engine::replaceShader(const std::string& vertexPath, const std::string& fra
 
 void Engine::drawTriangle(float x1,float y1, float x2, float y2, float x3, float y3)
 {
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
     float vertices []= {
         x1, y1 , 0.0f,
         x2, y2, 0.0f,
@@ -113,6 +113,15 @@ void Engine::drawTriangle(float x1,float y1, float x2, float y2, float x3, float
     };
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
     glDrawArrays(GL_TRIANGLES, 0, 3);
+}
+
+void Engine::drawRectangle(float x,float y, float width, float height)
+{
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    if (width <=0 || height <=0) {return;}
+    Engine::drawTriangle(x,y,x+width,y,x,y-height);
+    Engine::drawTriangle(x+width,y-height,x+width,y,x,y-height);
 }
 
 void Engine::onStart() {}

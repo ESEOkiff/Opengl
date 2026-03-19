@@ -1,0 +1,2 @@
+void drawTriangle(...);
+void drawRectangle(...);

@@ -17,6 +17,7 @@ class Engine
         int getEngineState();
         void replaceShader(const std::string& vertexPath, const std::string& fragmentPath);
         void drawTriangle(float x1,float y1, float x2, float y2, float x3, float y3);
+        void drawRectangle(float x,float y, float width, float height);
 
         protected:
         GLFWwindow* window;
@@ -30,6 +31,10 @@ class Engine
     private:
         int engineState{0};
         Shader shader;
+        unsigned int VBO;
+        unsigned int VAO;
+
+
     
 };
 
