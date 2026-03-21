@@ -36,31 +36,8 @@ Engine::Engine(int wHeigh, int wWidth, const char* wTitle, bool isWresizable)
 
 void Engine::run(const int MAX_TRIANGLES, const int FLOATS_PER_TRIANGLE) 
 {
-    float vertices[] = {
-        -0.8f,  0.8f, 0.0f,   // top-left
-        -0.8f, -0.8f, 0.0f,   // bottom-left
-         0.8f,  0.8f, 0.0f,   // top-right
-    };
-    //MYTODO : mouve to class mesh and adapt
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    renderer.init(MAX_TRIANGLES, FLOATS_PER_TRIANGLE);
 
-    glBufferData(GL_ARRAY_BUFFER,
-                MAX_TRIANGLES * FLOATS_PER_TRIANGLE * sizeof(float),
-                nullptr,
-                GL_DYNAMIC_DRAW);
-    
-    glVertexAttribPointer(
-        0,          // index
-        3,          // nombre de valeurs (x,y,z)
-        GL_FLOAT,   // type
-        GL_FALSE,   // normalisation
-            3*sizeof(float), // taille d'un sommet
-            (void*)0
-    );
-    glEnableVertexAttribArray(0);
     shader = Shader("../shaders/vertex.glsl", "../shaders/fragment.glsl");
     shader.use();
 
@@ -87,11 +64,11 @@ void Engine::run(const int MAX_TRIANGLES, const int FLOATS_PER_TRIANGLE)
 void Engine::onRender()
 {
     Engine::clear();
+    renderer.begin();
     
     renderer.drawRectangle(-0.8f,0.8f, 1.0f,1.0f);
-    renderer.drawRectangle(0.8f,-0.8f, 0.1f,0.1f);
 
-    renderer.end();
+    renderer.frame();
         
 }
 
