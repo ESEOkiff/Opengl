@@ -3,18 +3,19 @@
 #include <iostream>
 #include "./engine.hpp"
 #include "../renderer/shader/shader.hpp"
+#include "../renderer/draw/Renderer.hpp"
 #include <fstream>
 #include <sstream>
 #include <string>
 #include <cmath>
 
-Engine::Engine(int wHeigh, int wWidth, bool isWresizable)
+Engine::Engine(int wHeigh, int wWidth, const char* wTitle, bool isWresizable)
 {   
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_RESIZABLE, isWresizable);
-    window = glfwCreateWindow(wWidth, wHeigh, "OpenGL", NULL, NULL);
+    window = glfwCreateWindow(wWidth, wHeigh, wTitle, NULL, NULL);
     
     if (!window)
     {
@@ -33,7 +34,7 @@ Engine::Engine(int wHeigh, int wWidth, bool isWresizable)
     }
 }
 
-void Engine::run() 
+void Engine::run(const int MAX_TRIANGLES, const int FLOATS_PER_TRIANGLE) 
 {
     float vertices[] = {
         -0.8f,  0.8f, 0.0f,   // top-left
@@ -43,10 +44,13 @@ void Engine::run()
     //MYTODO : mouve to class mesh and adapt
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
-    
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+
+    glBufferData(GL_ARRAY_BUFFER,
+                MAX_TRIANGLES * FLOATS_PER_TRIANGLE * sizeof(float),
+                nullptr,
+                GL_DYNAMIC_DRAW);
     
     glVertexAttribPointer(
         0,          // index
@@ -59,6 +63,8 @@ void Engine::run()
     glEnableVertexAttribArray(0);
     shader = Shader("../shaders/vertex.glsl", "../shaders/fragment.glsl");
     shader.use();
+
+
 
     
     onStart();
@@ -80,16 +86,20 @@ void Engine::run()
 
 void Engine::onRender()
 {
-    Engine::basicRender();
+    Engine::clear();
+    
+    renderer.drawRectangle(-0.8f,0.8f, 1.0f,1.0f);
+    renderer.drawRectangle(0.8f,-0.8f, 0.1f,0.1f);
+
+    renderer.end();
+        
 }
 
-void Engine::basicRender() 
+void Engine::clear() 
 {
     glClearColor(0.0,0.75f,1.0f,0.0);
     glClear(GL_COLOR_BUFFER_BIT);
-    //glDrawArrays(GL_TRIANGLES, 0, 3);
 
-    drawRectangle(-0.8f,0.8f, -0.8f,0.8f);
 }
 
 
@@ -100,28 +110,6 @@ int Engine::getEngineState(){return engineState;}
 void Engine::replaceShader(const std::string& vertexPath, const std::string& fragmentPath) 
 {
     shader = Shader(vertexPath.c_str(), fragmentPath.c_str());
-}
-
-void Engine::drawTriangle(float x1,float y1, float x2, float y2, float x3, float y3)
-{
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    float vertices []= {
-        x1, y1 , 0.0f,
-        x2, y2, 0.0f,
-        x3, y3, 0.0f
-    };
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-}
-
-void Engine::drawRectangle(float x,float y, float width, float height)
-{
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    if (width <=0 || height <=0) {return;}
-    Engine::drawTriangle(x,y,x+width,y,x,y-height);
-    Engine::drawTriangle(x+width,y-height,x+width,y,x,y-height);
 }
 
 void Engine::onStart() {}
