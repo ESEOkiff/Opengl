@@ -1,13 +1,17 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include "./engine.hpp"
-#include "../renderer/shader/shader.hpp"
-#include "../renderer/draw/Renderer.hpp"
 #include <fstream>
 #include <sstream>
 #include <string>
 #include <cmath>
+
+#include "./engine.hpp"
+#include "../renderer/shader/shader.hpp"
+#include "../renderer/draw/Renderer.hpp"
+#include "../utils.hpp"
+
+
 
 Engine::Engine(int wHeigh, int wWidth, const char* wTitle, bool isWresizable)
 {   
@@ -64,7 +68,11 @@ void Engine::onRender()
 {
     renderer.begin();
     
-    renderer.drawRectangle(-0.8f,0.8f, 1.0f,1.0f);
+    renderer.drawTriangle(
+        {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}}, // rouge
+        {{ 0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}}, // vert
+        {{ 0.0f,  0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}}  // bleu
+    );
 
     renderer.frame();
         
