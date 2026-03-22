@@ -11,6 +11,7 @@ public:
     void frame();
     void begin();
     void init(const unsigned int MAX_TRIANGLES, const unsigned int FLOATS_PER_TRIANGLE);
+    void clear(float r = 0.0, float g = 0.75f, float b = 1.0f, float a = 0.0f);
 
 private:
     unsigned int VAO, VBO;

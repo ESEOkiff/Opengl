@@ -27,7 +27,6 @@ class Engine
         virtual void onStart();
         virtual void onUpdate();
         virtual void onRender();
-        void clear();
         
     private:
         int engineState{0};

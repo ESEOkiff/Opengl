@@ -61,8 +61,15 @@ void Renderer::init(const unsigned int MAX_TRIANGLES, const unsigned int FLOATS_
 
 void Renderer::begin()
 {
+    Renderer::clear();
     currentOffset = 0;
 
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
+}
+void Renderer::clear(float r, float g, float b, float a) 
+{
+    glClearColor(r,g,b,a);
+    glClear(GL_COLOR_BUFFER_BIT);
+
 }

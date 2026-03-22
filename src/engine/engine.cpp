@@ -43,7 +43,6 @@ void Engine::run(const int MAX_TRIANGLES, const int FLOATS_PER_TRIANGLE)
 
 
 
-    
     onStart();
     
     while (!glfwWindowShouldClose(window))
@@ -63,7 +62,6 @@ void Engine::run(const int MAX_TRIANGLES, const int FLOATS_PER_TRIANGLE)
 
 void Engine::onRender()
 {
-    Engine::clear();
     renderer.begin();
     
     renderer.drawRectangle(-0.8f,0.8f, 1.0f,1.0f);
@@ -72,12 +70,7 @@ void Engine::onRender()
         
 }
 
-void Engine::clear() 
-{
-    glClearColor(0.0,0.75f,1.0f,0.0);
-    glClear(GL_COLOR_BUFFER_BIT);
 
-}
 
 
 
