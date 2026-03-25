@@ -1,5 +1,6 @@
 #include "Renderer.hpp"
 #include <iostream>
+#include <cmath>
 #include "../../utils.hpp"
 
 void Renderer::drawTriangle(point p1, point p2, point p3)
@@ -92,8 +93,26 @@ void Renderer::begin(color clearcolor, float alpha)
 }
 
 void Renderer::clear(float r, float g, float b, float a) 
+
 {
     glClearColor(r,g,b,a);
     glClear(GL_COLOR_BUFFER_BIT);
 
+}
+
+void Renderer::drawCircle(float cx, float cy, float radius, int segments, color c)
+{
+    for (int i = 0; i < segments; i++)
+    {
+        float angle1 = (float)i / segments * 2.0f * M_PI;
+        float angle2 = (float)(i + 1) / segments * 2.0f * M_PI;
+
+        float x1 = cx + cos(angle1) * radius;
+        float y1 = cy + sin(angle1) * radius;
+
+        float x2 = cx + cos(angle2) * radius;
+        float y2 = cy + sin(angle2) * radius;
+
+        drawTriangle({{x1,y1,0},c},{{x2,y2,0},c}, {{cx,cy,0},c});
+    }
 }

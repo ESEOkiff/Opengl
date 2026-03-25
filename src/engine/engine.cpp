@@ -13,13 +13,15 @@
 
 
 
-Engine::Engine(int wHeigh, int wWidth, const char* wTitle, bool isWresizable)
+Engine::Engine(int lwHeigh, int lwWidth, const char* wTitle, bool isWresizable)
 {   
+    wHeigh = lwHeigh;
+    wWidth = lwWidth;
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_RESIZABLE, isWresizable);
-    window = glfwCreateWindow(wWidth, wHeigh, wTitle, NULL, NULL);
+    window = glfwCreateWindow(lwWidth, lwHeigh, wTitle, NULL, NULL);
     
     if (!window)
     {
@@ -45,7 +47,25 @@ void Engine::run(const int MAX_TRIANGLES, const int FLOATS_PER_TRIANGLE)
     shader = Shader("../shaders/vertex.glsl", "../shaders/fragment.glsl");
     shader.use();
 
+    float left = 0;
+    float right = wWidth;
+    float bottom = 0;
+    float top = wHeigh;
 
+    float projection[16] = {
+        2/(right-left), 0, 0, 0,
+        0, 2/(top-bottom), 0, 0,
+        0, 0, -1, 0,
+        -(right+left)/(right-left),
+        -(top+bottom)/(top-bottom),
+        0, 1
+    };
+    glUniformMatrix4fv(
+        glGetUniformLocation(shader.ID, "projection"),
+        1,
+        GL_FALSE,
+        projection
+    );
 
     onStart();
     
@@ -66,12 +86,20 @@ void Engine::run(const int MAX_TRIANGLES, const int FLOATS_PER_TRIANGLE)
 
 void Engine::onRender()
 {
-    renderer.begin();
-    
+    renderer.begin({}, 1.0f);
+    glUniform1f(glGetUniformLocation(shader.ID, "time"), glfwGetTime());
+    glUniform2f(glGetUniformLocation(shader.ID, "resolution"), 800, 600);   
+    float speed = 3.0f;
+    float t = glfwGetTime() * speed  ;
+
+    float scale = 0.5f + 0.1f * sin(t)+0.7;
+    float r = pow((sin(t) + 1.0f) / 2.0f, 1.5f);
+    float g = pow((sin(t + 2.0f) + 1.0f) / 2.0f, 1.5f);
+    float b = pow((sin(t + 4.0f) + 1.0f) / 2.0f, 1.5f);
     renderer.drawTriangle(
-        {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}}, // rouge
-        {{ 0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}}, // vert
-        {{ 0.0f,  0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}}  // bleu
+        {{400 - 100*scale, 300 - 100*scale, 0.0f}, {r,g,b}},
+        {{400 + 100*scale, 300 - 100*scale, 0.0f}, {g,b,r}}, 
+        {{400,             300 + 100*scale, 0.0f}, {b,r,g}}  
     );
 
     renderer.frame();

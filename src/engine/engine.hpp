@@ -36,6 +36,7 @@ class Engine
         unsigned int VBO;
         unsigned int VAO;
         Renderer renderer;
+        int wHeigh, wWidth;
 
 
     
