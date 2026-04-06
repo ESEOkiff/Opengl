@@ -4,6 +4,8 @@
 #include <GLFW/glfw3.h>
 #include <fstream>
 #include <sstream>
+#include <glm/glm.hpp>
+
 #include <string>
 #include "../renderer/shader/shader.hpp"
 #include "../renderer/draw/Renderer.hpp"
@@ -15,7 +17,7 @@
 class Engine
 {
     public:
-        Engine(int wHeigh = 600, int wWidth = 800,const char* wTitle = "Window",  bool isWresizable = 0);
+        Engine(int wHeigh = 600, int wWidth = 800,const char* wTitle = "Window",  bool isWresizable = 0,enum projection projection = projection::Orthographic);
         void run(const int MAX_TRIANGLES = 1000, const int FLOATS_PER_TRIANGLE = 9);
         int getEngineState();
         void replaceShader(const std::string& vertexPath, const std::string& fragmentPath);
@@ -37,6 +39,8 @@ class Engine
         unsigned int VAO;
         Renderer renderer;
         int wHeigh, wWidth;
+        glm::mat4 projection;
+
 
 
     

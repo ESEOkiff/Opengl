@@ -2,22 +2,20 @@
 #include <iostream>
 #include <cmath>
 #include "../../utils.hpp"
-
-void Renderer::drawTriangle(point p1, point p2, point p3)
+#include "../../engine/transform.hpp"
+void Renderer::drawTriangleTransformed(point p1, point p2, point p3, const Transform& t)
 {
-
     point vertices[] = {
-        p1,
-        p2,
-        p3
+        {applyTransform(p1.coor, t), p1.colors},
+        {applyTransform(p2.coor, t), p2.colors},
+        {applyTransform(p3.coor, t), p3.colors}
     };
 
     glBufferSubData(GL_ARRAY_BUFFER, currentOffset, sizeof(vertices), vertices);
-
     currentOffset += sizeof(vertices);
 }
 
-void Renderer::drawTriangle(coordinates cp1, coordinates cp2, coordinates cp3, color color)
+void Renderer::drawTriangleTransformed(coordinates cp1, coordinates cp2, coordinates cp3, color color)
 {
 
     point vertices[] = {
@@ -31,11 +29,11 @@ void Renderer::drawTriangle(coordinates cp1, coordinates cp2, coordinates cp3, c
     currentOffset += sizeof(vertices);
 }
 
-void Renderer::drawRectangle(float x, float y, float width, float height, color color)
+void Renderer::drawRectangleTransformed(float x, float y, float width, float height, color color)
 {
     if (width <=0 || height <=0) {return;}
-    Renderer::drawTriangle({{x,y,0},color},{{x+width,y,0},color},{{x,y-height,0},color});
-    Renderer::drawTriangle({{x+width,y-height,0},color},{{x+width,y,0},{0,0,0}},{{x,y-height,0},color});
+    //Renderer::drawTriangle({{x,y,0},color},{{x+width,y,0},color},{{x,y-height,0},color});
+    //Renderer::drawTriangle({{x+width,y-height,0},color},{{x+width,y,0},{0,0,0}},{{x,y-height,0},color});
 }
 
 void Renderer::frame()
@@ -100,7 +98,7 @@ void Renderer::clear(float r, float g, float b, float a)
 
 }
 
-void Renderer::drawCircle(float cx, float cy, float radius, int segments, color c)
+void Renderer::drawCircleTransformed(float cx, float cy, float radius, int segments, color c)
 {
     for (int i = 0; i < segments; i++)
     {
@@ -113,6 +111,6 @@ void Renderer::drawCircle(float cx, float cy, float radius, int segments, color 
         float x2 = cx + cos(angle2) * radius;
         float y2 = cy + sin(angle2) * radius;
 
-        drawTriangle({{x1,y1,0},c},{{x2,y2,0},c}, {{cx,cy,0},c});
+        //drawTriangleTransformed({{x1,y1,0},c},{{x2,y2,0},c}, {{cx,cy,0},c});
     }
 }

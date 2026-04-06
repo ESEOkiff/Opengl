@@ -3,25 +3,45 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <string>
 #include <cmath>
 
+#include "../debuging/errorReporting.h"
 #include "./engine.hpp"
 #include "../renderer/shader/shader.hpp"
 #include "../renderer/draw/Renderer.hpp"
 #include "../utils.hpp"
+#include "transform.hpp"
 
 
-
-Engine::Engine(int lwHeigh, int lwWidth, const char* wTitle, bool isWresizable)
-{   
+Engine::Engine(int lwHeigh, int lwWidth, const char* wTitle, bool isWresizable, enum projection lProjection)
+{
     wHeigh = lwHeigh;
     wWidth = lwWidth;
+    
+    switch (lProjection)
+    {
+        case projection::Orthographic:
+        projection = glm::ortho(0.0f, (float)wWidth, 0.0f, (float)wHeigh,-1.0f,1.0f);
+        break;
+        
+        case projection::Perspective:
+        projection = glm::perspective(0.0f,(float)wWidth,0.0f,(float)wHeigh);
+        break;
+        
+        default:
+        break;
+    }
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_RESIZABLE, isWresizable);
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
     window = glfwCreateWindow(lwWidth, lwHeigh, wTitle, NULL, NULL);
+    glm::mat4 baseTransform = glm::mat4(1.0f);
     
     if (!window)
     {
@@ -38,6 +58,7 @@ Engine::Engine(int lwHeigh, int lwWidth, const char* wTitle, bool isWresizable)
         engineState = -1;
         return;
     }
+    //enableReportGlErrors();
 }
 
 void Engine::run(const int MAX_TRIANGLES, const int FLOATS_PER_TRIANGLE) 
@@ -52,27 +73,19 @@ void Engine::run(const int MAX_TRIANGLES, const int FLOATS_PER_TRIANGLE)
     float bottom = 0;
     float top = wHeigh;
 
-    float projection[16] = {
-        2/(right-left), 0, 0, 0,
-        0, 2/(top-bottom), 0, 0,
-        0, 0, -1, 0,
-        -(right+left)/(right-left),
-        -(top+bottom)/(top-bottom),
-        0, 1
-    };
     glUniformMatrix4fv(
         glGetUniformLocation(shader.ID, "projection"),
         1,
         GL_FALSE,
-        projection
+        glm::value_ptr(projection)
     );
-
     onStart();
     
     while (!glfwWindowShouldClose(window))
     {
         shader.use();
-       
+        glUniformMatrix4fv(glGetUniformLocation(shader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+        glUniformMatrix4fv(glGetUniformLocation(shader.ID, "transform"), 1, GL_FALSE, glm::value_ptr(baseTransform));
         onUpdate();
         onRender();
 
@@ -90,16 +103,35 @@ void Engine::onRender()
     glUniform1f(glGetUniformLocation(shader.ID, "time"), glfwGetTime());
     glUniform2f(glGetUniformLocation(shader.ID, "resolution"), 800, 600);   
     float speed = 3.0f;
-    float t = glfwGetTime() * speed  ;
+    float t = glfwGetTime() * speed;
 
-    float scale = 0.5f + 0.1f * sin(t)+0.7;
-    float r = pow((sin(t) + 1.0f) / 2.0f, 1.5f);
-    float g = pow((sin(t + 2.0f) + 1.0f) / 2.0f, 1.5f);
-    float b = pow((sin(t + 4.0f) + 1.0f) / 2.0f, 1.5f);
-    renderer.drawTriangle(
-        {{400 - 100*scale, 300 - 100*scale, 0.0f}, {r,g,b}},
-        {{400 + 100*scale, 300 - 100*scale, 0.0f}, {g,b,r}}, 
-        {{400,             300 + 100*scale, 0.0f}, {b,r,g}}  
+    float scale = 0.5f + 0.1f * sin(t) + 0.7;
+
+    // Assure que le uniform "transform" du vertex shader n'est pas indéfini.
+
+    Transform tra;
+    tra.position = {400, 300};   // centre écran
+    tra.scale = {1, 1};          // IMPORTANT pour pixels
+    tra.rotation = glfwGetTime();
+
+    Transform tra2;
+    tra2.position = {400, 300};   // centre écran
+    tra2.scale = {1, 1};          // IMPORTANT pour pixels
+    tra2.rotation = -glfwGetTime();
+    
+    
+    // centered triangle
+    renderer.drawTriangleTransformed(
+        {{-70, -70, 0}, {1,0,0}},
+        {{ 70, -70, 0}, {0,1,0}},
+        {{ 0,  70, 0}, {0,0,1}},
+        tra
+    );    
+    renderer.drawTriangleTransformed(
+        {{-70, -70, 0}, {1,0,0}},
+        {{ 70, -70, 0}, {0,1,0}},
+        {{ 0,  70, 0}, {0,0,1}},
+        tra2
     );
 
     renderer.frame();
