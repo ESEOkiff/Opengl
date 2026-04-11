@@ -6,6 +6,8 @@
 #include <sstream>
 #include <string>
 #include "/home/raphael/Bureau/programmation/projet informatique/projet informatique pur/C++/ressources/generalIncludes/math/math/includes/vec.hpp"
+#include "utils.hpp"
+
 std::string readFile(const char* path);
 
 
@@ -18,7 +20,7 @@ int main()
     Engine e;
     if (e.getEngineState() == -1) 
     {
-        std::cout <<"Ereur lors de l'inisialisation"<<std::endl;
+        std::cerr <<"Erreur lors de l'initialisation"<< std::endl;
         return -1;
     }
 

@@ -18,6 +18,7 @@ add_executable(app
     src/renderer/draw/Renderer.cpp
     src/engine/transform.cpp
     src/debuging/errorReporting.cpp
+    src/engine/input.cpp
 )
 
 target_link_libraries(app 

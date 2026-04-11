@@ -17,20 +17,21 @@
 class Engine
 {
     public:
-        Engine(int wHeigh = 600, int wWidth = 800,const char* wTitle = "Window",  bool isWresizable = 0,enum projection projection = projection::Orthographic);
+        Engine(int wHeigh = 600, int wWidth = 800,const char* wTitle = "Window",  bool isWresizable = 0, cameraSettings Camera = {});
         void run(const int MAX_TRIANGLES = 1000, const int FLOATS_PER_TRIANGLE = 9);
         int getEngineState();
         void replaceShader(const std::string& vertexPath, const std::string& fragmentPath);
-        void drawTriangle(float x1,float y1, float x2, float y2, float x3, float y3);
-        void drawRectangle(float x,float y, float width, float height);
-
+        float getDeltaTime() const;
+        void cameraHandeler(float speed = 200.0f);
+        
         protected:
         GLFWwindow* window;
-
+        
         
         virtual void onStart();
         virtual void onUpdate();
         virtual void onRender();
+        virtual void inputHandeler(); 
         
     private:
         int engineState{0};
@@ -40,6 +41,8 @@ class Engine
         Renderer renderer;
         int wHeigh, wWidth;
         glm::mat4 projection;
+        Camera cam;
+        float deltaTime{0.0f};
 
 
 

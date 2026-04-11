@@ -32,12 +32,36 @@ struct DrawCommand {
     Transform transform;
 };
 
+
 enum class projection
 {
     Orthographic,
     Perspective
 };
 
+struct cameraSettings 
+{
+    enum projection Projection{projection::Orthographic};
+    bool mouvable{false};
+};
 
+struct Camera
+{
+    glm::vec3 position {0.0f, 0.0f,-1.0f};
+    float zoom = 1.0f;
+
+    glm::mat4 getViewMatrix() const
+    {
+        glm::mat4 view(1.0f);
+
+        // inverse de la position
+        view = glm::translate(view, glm::vec3(-position));
+
+        // zoom
+        view = glm::scale(view, glm::vec3(zoom, zoom, 1.0f));
+
+        return view;
+    }
+};
 
 #endif
