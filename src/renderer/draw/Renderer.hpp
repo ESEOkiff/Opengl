@@ -10,10 +10,10 @@
 class Renderer
 {
 public:
-    void drawTriangleTransformed (point p1, point p2, point p3, const Transform& transform);
-    void drawTriangleTransformed (coordinates cp1, coordinates cp2, coordinates cp3, color color);
-    void drawRectangleTransformed(float x, float y, float width, float height, color color = {});
-    void drawCircleTransformed(float cx, float cy, float radius, int segments, color c);
+    void drawTriangleTransformed (point p1, point p2, point p3, const Transform& transform = {});
+    void drawTriangleTransformed (coordinates cp1, coordinates cp2, coordinates cp3, color color, const Transform& transform = {});
+    void drawRectangleTransformed(float x, float y, float width, float height, color color = {}, const Transform& transform = {});
+    void drawCircleTransformed(float cx, float cy, float radius, int segments, color c, const Transform& t = {});
     void frame();
     void begin(color clearcolor = {}, float alpha = 0.0f);
     void init(const unsigned int MAX_TRIANGLES, const unsigned int FLOATS_PER_TRIANGLE);

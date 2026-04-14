@@ -17,7 +17,7 @@
 class Engine
 {
     public:
-        Engine(int wHeigh = 600, int wWidth = 800,const char* wTitle = "Window",  bool isWresizable = 0, cameraSettings Camera = {});
+        Engine(int wHeigh = 600, int wWidth = 800,const char* wTitle = "Window",  bool isWresizable = 0, cameraSettings Camera = {}, bool cursorEnabled = false);
         void run(const int MAX_TRIANGLES = 1000, const int FLOATS_PER_TRIANGLE = 9);
         int getEngineState();
         void replaceShader(const std::string& vertexPath, const std::string& fragmentPath);

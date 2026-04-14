@@ -10,10 +10,6 @@
 
 std::string readFile(const char* path);
 
-
-
-
-
 using namespace myMath;
 int main()
 {

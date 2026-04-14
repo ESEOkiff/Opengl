@@ -17,8 +17,9 @@
 #include "transform.hpp"
 #include "input.hpp"
 
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
-Engine::Engine(int lwHeigh, int lwWidth, const char* wTitle, bool isWresizable, cameraSettings Camera)
+Engine::Engine(int lwHeigh, int lwWidth, const char* wTitle, bool isWresizable, cameraSettings Camera, bool cursorEnabled)
 {
     wHeigh = lwHeigh;
     wWidth = lwWidth;
@@ -26,11 +27,17 @@ Engine::Engine(int lwHeigh, int lwWidth, const char* wTitle, bool isWresizable, 
     switch (Camera.Projection)
     {
         case projection::Orthographic:
-        projection = glm::ortho(0.0f, (float)wWidth, 0.0f, (float)wHeigh,-1.0f,1.0f);
+        projection = glm::ortho(0.0f, (float)wWidth, 0.0f, (float)wHeigh,-1000.0f,1000.0f);
         break;
         
         case projection::Perspective:
-        projection = glm::perspective(0.0f,(float)wWidth,0.0f,(float)wHeigh);
+        projection = glm::perspective(
+            glm::radians(60.0f),                 // FOV
+            (float)wWidth / (float)wHeigh,       // aspect ratio
+            0.1f,                                // near
+            100.0f                               // far
+        );
+        
         break;
         
         default:
@@ -43,6 +50,7 @@ Engine::Engine(int lwHeigh, int lwWidth, const char* wTitle, bool isWresizable, 
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
     window = glfwCreateWindow(lwWidth, lwHeigh, wTitle, NULL, NULL);
     
+    if(!cursorEnabled) glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     if (!window)
     {
         std::cout << "Erreur fenetre\n";
@@ -90,6 +98,9 @@ void Engine::run(const int MAX_TRIANGLES, const int FLOATS_PER_TRIANGLE)
         deltaTime = currentTime - lastTime;
         lastTime = currentTime;
 
+        glfwSetWindowUserPointer(window, &cam);
+        glfwSetCursorPosCallback(window, mouse_callback);
+
         onUpdate();
         onRender();
         
@@ -111,12 +122,9 @@ void Engine::onRender()
     
     float scale = 0.5f + 0.1f * sin(t) + 0.7;
 
-    
-
-
     Transform tra2;
-    tra2.position = {400, 300};   // centre écran
-    tra2.scale = {1, 1};          // IMPORTANT pour pixels
+    tra2.position = {0, 0, 0}; // 👈 important
+    tra2.scale = {1,1,1};
     tra2.rotation = 0;
     
     
@@ -132,7 +140,7 @@ void Engine::onRender()
     // centered triangle
 
     renderer.drawTriangleTransformed(
-        {{-70, -70, 0}, {1,0,0}},
+        {{-70, -70, 0}, {1,0,1}},
         {{ 70, -70, 0}, {0,1,0}},
         {{ 0,  70, 0}, {0,0,1}},
         tra2
@@ -143,12 +151,7 @@ void Engine::onRender()
     
 }
 
-
-
-
-
 int Engine::getEngineState(){return engineState;}
-
 
 void Engine::replaceShader(const std::string& vertexPath, const std::string& fragmentPath) 
 {
@@ -178,14 +181,50 @@ void Engine::inputHandeler()
 
 void Engine::cameraHandeler(float speed)
 {
-    if (Input::isKeyDown(GLFW_KEY_D)) cam.position.x += speed;
-    if (Input::isKeyDown(GLFW_KEY_A)) cam.position.x -= speed;
+    glm::vec3 front;
+    front.x = cos(glm::radians(cam.pitch)) * cos(glm::radians(cam.yaw));
+    front.y = sin(glm::radians(cam.pitch));
+    front.z = cos(glm::radians(cam.pitch)) * sin(glm::radians(cam.yaw));
+    front = glm::normalize(front);
 
-    if (Input::isKeyDown(GLFW_KEY_W)) cam.position.y += speed;
-    if (Input::isKeyDown(GLFW_KEY_S)) cam.position.y -= speed;
+    glm::vec3 right = glm::normalize(glm::cross(front, glm::vec3(0,1,0)));
 
-    cam.zoom += (Input::isKeyDown(GLFW_KEY_Q) - Input::isKeyDown(GLFW_KEY_E)) * deltaTime; 
+    if (Input::isKeyDown(GLFW_KEY_W)) cam.position += front * speed;
+    if (Input::isKeyDown(GLFW_KEY_S)) cam.position -= front * speed;
 
-    cam.zoom = std::max(0.1f, cam.zoom);
-    cam.position.z = std::max(0.1f, cam.position.z);
+    if (Input::isKeyDown(GLFW_KEY_D)) cam.position += right * speed;
+    if (Input::isKeyDown(GLFW_KEY_A)) cam.position -= right * speed;
+}
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    static float lastX = 400;
+    static float lastY = 300;
+    static bool firstMouse = true;
+
+    if (firstMouse)
+    {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    float deltaX = xpos - lastX;
+    float deltaY = lastY - ypos;
+
+    lastX = xpos;
+    lastY = ypos;
+
+    float sensitivity = 0.1f;
+    deltaX *= sensitivity;
+    deltaY *= sensitivity;
+
+    Camera* cam = static_cast<Camera*>(glfwGetWindowUserPointer(window));
+
+    cam->yaw   += deltaX;
+    cam->pitch += deltaY;
+
+    // clamp pitch
+    if (cam->pitch > 89.0f) cam->pitch = 89.0f;
+    if (cam->pitch < -89.0f) cam->pitch = -89.0f;
 }

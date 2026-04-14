@@ -47,21 +47,29 @@ struct cameraSettings
 
 struct Camera
 {
-    glm::vec3 position {0.0f, 0.0f,-1.0f};
+    glm::vec3 position {0.0f, 0.0f, 3.0f};
+
+    float yaw   = -90.0f; // IMPORTANT pour regarder vers -Z
+    float pitch = 0.0f;
+
     float zoom = 1.0f;
 
     glm::mat4 getViewMatrix() const
     {
-        glm::mat4 view(1.0f);
+        glm::vec3 front;
+        front.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
+        front.y = sin(glm::radians(pitch));
+        front.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
 
-        // inverse de la position
-        view = glm::translate(view, glm::vec3(-position));
+        front = glm::normalize(front);
 
-        // zoom
-        view = glm::scale(view, glm::vec3(zoom, zoom, 1.0f));
-
-        return view;
+        return glm::lookAt(
+            position,
+            position + front,
+            glm::vec3(0, 1, 0)
+        );
     }
 };
+
 
 #endif

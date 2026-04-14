@@ -7,9 +7,9 @@
 
 glm::mat4 Transform::getMatrix() const {
     glm::mat4 m(1.0f);
-    m = glm::translate(m, glm::vec3(position, 0.0f));
+    m = glm::translate(m, position);
     m = glm::rotate(m, rotation, glm::vec3(0,0,1));
-    m = glm::scale(m, glm::vec3(scale, 1.0f));
+    m = glm::scale(m, scale);
     return m;
 }
 
@@ -34,4 +34,13 @@ coordinates applyTransform(const coordinates& p, const Transform& t)
         yr + t.position.y,
         p.z
     };
+}
+
+Transform Transform::identity()
+{
+    Transform t;
+    t.position = {0, 0, 0};
+    t.rotation = 0;
+    t.scale = {1, 1, 1};
+    return t;
 }

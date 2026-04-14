@@ -15,13 +15,13 @@ void Renderer::drawTriangleTransformed(point p1, point p2, point p3, const Trans
     currentOffset += sizeof(vertices);
 }
 
-void Renderer::drawTriangleTransformed(coordinates cp1, coordinates cp2, coordinates cp3, color color)
+void Renderer::drawTriangleTransformed(coordinates cp1, coordinates cp2, coordinates cp3, color color, const Transform& t)
 {
 
     point vertices[] = {
-        {cp1,color},
-        {cp2,color},
-        {cp3,color}
+        {applyTransform(cp1, t),color},
+        {applyTransform(cp2, t),color},
+        {applyTransform(cp3, t),color}
     };
 
     glBufferSubData(GL_ARRAY_BUFFER, currentOffset, sizeof(vertices), vertices);
@@ -29,11 +29,11 @@ void Renderer::drawTriangleTransformed(coordinates cp1, coordinates cp2, coordin
     currentOffset += sizeof(vertices);
 }
 
-void Renderer::drawRectangleTransformed(float x, float y, float width, float height, color color)
+void Renderer::drawRectangleTransformed(float x, float y, float width, float height, color color, const Transform& t)
 {
     if (width <=0 || height <=0) {return;}
-    //Renderer::drawTriangle({{x,y,0},color},{{x+width,y,0},color},{{x,y-height,0},color});
-    //Renderer::drawTriangle({{x+width,y-height,0},color},{{x+width,y,0},{0,0,0}},{{x,y-height,0},color});
+    Renderer::drawTriangleTransformed({{x,y,0},color},{{x+width,y,0},color},{{x,y-height,0},color},t);
+    Renderer::drawTriangleTransformed({{x+width,y-height,0},color},{{x+width,y,0},{0,0,0}},{{x,y-height,0},color},t);
 }
 
 void Renderer::frame()
@@ -79,6 +79,7 @@ void Renderer::init(const unsigned int MAX_TRIANGLES, const unsigned int FLOATS_
 
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
+    glEnable(GL_DEPTH_TEST);
 }
 
 void Renderer::begin(color clearcolor, float alpha)
@@ -94,11 +95,11 @@ void Renderer::clear(float r, float g, float b, float a)
 
 {
     glClearColor(r,g,b,a);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 }
 
-void Renderer::drawCircleTransformed(float cx, float cy, float radius, int segments, color c)
+void Renderer::drawCircleTransformed(float cx, float cy, float radius, int segments, color c, const Transform& t)
 {
     for (int i = 0; i < segments; i++)
     {
@@ -111,6 +112,6 @@ void Renderer::drawCircleTransformed(float cx, float cy, float radius, int segme
         float x2 = cx + cos(angle2) * radius;
         float y2 = cy + sin(angle2) * radius;
 
-        //drawTriangleTransformed({{x1,y1,0},c},{{x2,y2,0},c}, {{cx,cy,0},c});
+        drawTriangleTransformed({{x1,y1,0},c},{{x2,y2,0},c}, {{cx,cy,0},c},t);
     }
 }
